@@ -11,11 +11,11 @@ import javax.tools.ToolProvider;
 import org.intellij.lang.annotations.Language;
 
 
-
 public class CompileTest {
 
 	private List<Code> classCodes = new ArrayList<>();
 	private List<Processor> processors = new ArrayList<>();
+	private boolean inheritAllProcessors = false;
 
 	public CompileTest classCode(String name, @Language("Java") String code) {
 		classCodes.add(new Code(name, code));
@@ -45,10 +45,16 @@ public class CompileTest {
 		                                                                null,
 		                                                                null,
 		                                                                compilationUnits);
-
-		compilationTask.setProcessors(processors);
+		if (!inheritAllProcessors) {
+			compilationTask.setProcessors(processors);
+		}
 		compilationTask.call();
 		CompiledClassLoader classLoader = new CompiledClassLoader(fileManager.getGeneratedFiles());
 		return new CompileResult(classLoader);
+	}
+
+	public CompileTest inheritAllProcessors() {
+		this.inheritAllProcessors = true;
+		return this;
 	}
 }

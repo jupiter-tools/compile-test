@@ -1,5 +1,6 @@
 package com.jupitertools.compiletest;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -92,6 +93,49 @@ class CompileTestTest {
 			// Assert
 			System.out.println(result);
 			assertThat(result).isEqualTo("Hey-Ho! class C");
+		}
+	}
+
+	@Nested
+	class ProcessorsInherit {
+
+		@Test
+		void lombokTest() {
+
+			String code = "import lombok.Getter;" +
+			              "" +
+			              "public class A {" +
+			              "  @Getter" +
+			              "  public String tst = \"ABC\";" +
+			              "}";
+
+			Object result = new CompileTest().classCode("A", code)
+			                                 .inheritAllProcessors()
+			                                 .compile()
+			                                 .createClass("A")
+			                                 .invoke("getTst");
+
+			assertThat(result).isEqualTo("ABC");
+		}
+
+		@Test
+		void error() {
+			String code = "import lombok.Getter;" +
+			              "" +
+			              "public class A {" +
+			              "  @Getter" +
+			              "  public String tst = \"ABC\";" +
+			              "}";
+
+			InstantiatedClass instance = new CompileTest().classCode("A", code)
+			                                              .compile()
+			                                              .createClass("A");
+
+			RuntimeException exc = Assertions.assertThrows(RuntimeException.class,
+			                                               () -> instance.invoke("getTst"));
+
+			assertThat(exc.getCause()).isInstanceOf(NoSuchMethodException.class);
+			assertThat(exc.getMessage()).contains("A.getTst()");
 		}
 	}
 }
