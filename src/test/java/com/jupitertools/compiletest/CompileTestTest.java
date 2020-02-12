@@ -103,7 +103,7 @@ class CompileTestTest {
 		void lombokTest() {
 
 			String code = "import lombok.Getter;" +
-			              "" +
+			              " " +
 			              "public class A {" +
 			              "  @Getter" +
 			              "  public String tst = \"ABC\";" +
