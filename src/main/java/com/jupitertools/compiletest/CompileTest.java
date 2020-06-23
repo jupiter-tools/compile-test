@@ -1,6 +1,8 @@
 package com.jupitertools.compiletest;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.processing.Processor;
@@ -22,6 +24,7 @@ public class CompileTest {
 
 	private List<Code> classCodes = new ArrayList<>();
 	private List<Processor> processors = new ArrayList<>();
+	private List<String> options = new ArrayList<>();
 	private boolean inheritAllProcessors = false;
 
 	/**
@@ -47,6 +50,11 @@ public class CompileTest {
 		return this;
 	}
 
+	public CompileTest options(String... opts) {
+		options.addAll(Arrays.asList(opts));
+		return this;
+	}
+
 	/**
 	 * Terminal action, compiles all previously added classes with
 	 * selected annotation processors
@@ -68,7 +76,7 @@ public class CompileTest {
 		JavaCompiler.CompilationTask compilationTask = compiler.getTask(null,
 		                                                                fileManager,
 		                                                                null,
-		                                                                null,
+																		options,
 		                                                                null,
 		                                                                compilationUnits);
 		if (!inheritAllProcessors) {
