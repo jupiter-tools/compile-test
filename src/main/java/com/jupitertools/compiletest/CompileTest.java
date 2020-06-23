@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.processing.Processor;
+import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
 import javax.tools.ToolProvider;
@@ -68,14 +69,17 @@ public class CompileTest {
 		                                                                                        code.getClassCode()))
 		                                                  .collect(Collectors.toList());
 
+		DiagnosticCollector<JavaFileObject> diagnosticCollector = new DiagnosticCollector<>();
+
 		JavaFileManagerWrapper fileManager =
-				new JavaFileManagerWrapper(compiler.getStandardFileManager(null,
+				new JavaFileManagerWrapper(compiler.getStandardFileManager(diagnosticCollector,
 				                                                           null,
 				                                                           null));
 
+
 		JavaCompiler.CompilationTask compilationTask = compiler.getTask(null,
 		                                                                fileManager,
-		                                                                null,
+		                                                                diagnosticCollector,
 																		options,
 		                                                                null,
 		                                                                compilationUnits);
@@ -84,7 +88,7 @@ public class CompileTest {
 		}
 		compilationTask.call();
 		CompiledClassLoader classLoader = new CompiledClassLoader(fileManager.getGeneratedFiles());
-		return new CompileResult(classLoader);
+		return new CompileResult(classLoader, diagnosticCollector.getDiagnostics());
 	}
 
 	/**

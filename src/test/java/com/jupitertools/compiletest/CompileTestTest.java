@@ -138,4 +138,41 @@ class CompileTestTest {
 			assertThat(exc.getMessage()).contains("A.getTst()");
 		}
 	}
+
+	@Nested
+	class CompilationOptions {
+
+		@Test
+		void options() {
+			CompileResult result = new CompileTest().classCode("A",
+			                                                   "public class A { " +
+			                                                   "  public String tst(){" +
+			                                                   // Warning about unnecessary class cast:
+			                                                   "           return (String)\"123\";" +
+			                                                   "  } " +
+			                                                   "}")
+			                                        // any warning will fail the compilation process:
+			                                        .options("-Xlint:cast", "-Werror")
+			                                        .compile();
+
+			Assertions.assertThrows(Exception.class, () -> result.loadClass("A"));
+		}
+
+		@Test
+		void diagnostics() {
+			CompileResult result = new CompileTest().classCode("A",
+			                                                   "public class A { " +
+			                                                   "  public String tst(){" +
+			                                                   // Warning about unnecessary class cast:
+			                                                   "           return (String)\"123\";" +
+			                                                   "  } " +
+			                                                   "}")
+			                                        // any warning will fail the compilation process:
+			                                        .options("-Xlint:cast")
+			                                        .compile();
+
+			System.out.println(result.getDiagnostics());
+		}
+	}
+
 }

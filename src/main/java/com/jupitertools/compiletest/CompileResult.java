@@ -1,5 +1,9 @@
 package com.jupitertools.compiletest;
 
+import java.util.List;
+import javax.tools.Diagnostic;
+import javax.tools.JavaFileObject;
+
 /**
  * Provide an API to work with the result of a compilation.
  * Used as part of {@link CompileTest} DSL to test a code compilation.
@@ -9,9 +13,12 @@ package com.jupitertools.compiletest;
 public class CompileResult {
 
 	private final ClassLoader classLoader;
+	private final List<Diagnostic<? extends JavaFileObject>> diagnostics;
 
-	CompileResult(ClassLoader classLoader) {
+	CompileResult(ClassLoader classLoader,
+	              List<Diagnostic<? extends JavaFileObject>> diagnostics) {
 		this.classLoader = classLoader;
+		this.diagnostics = diagnostics;
 	}
 
 	/**
@@ -44,5 +51,9 @@ public class CompileResult {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
+	}
+
+	public List<Diagnostic<? extends JavaFileObject>> getDiagnostics() {
+		return diagnostics;
 	}
 }
